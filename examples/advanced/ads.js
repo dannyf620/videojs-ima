@@ -80,7 +80,9 @@ Ads.prototype.adsManagerLoadedCallback = function() {
     google.ima.AdEvent.Type.PAUSED,
     google.ima.AdEvent.Type.RESUMED,
     google.ima.AdEvent.Type.STARTED,
-    google.ima.AdEvent.Type.THIRD_QUARTILE
+    google.ima.AdEvent.Type.THIRD_QUARTILE,
+    google.ima.AdEvent.Type.NONLINEAR_DIMENSIONS_ERROR,
+    google.ima.AdErrorEvent.Type.AD_ERROR
   ];
 
   for (var index = 0; index < events.length; index++) {
@@ -93,6 +95,17 @@ Ads.prototype.adsManagerLoadedCallback = function() {
 Ads.prototype.onAdEvent = function(event) {
   var message = 'Ad event: ' + event.type;
   this.log(message);
+  var resizeInterval;
+  if (event.type == google.ima.AdEvent.Type.NONLINEAR_DIMENSIONS_ERROR || event.type == google.ima.AdErrorEvent.Type.AD_ERROR) {
+    console.log("Minimal dimention at: ", document.querySelector('#ima-sample-videoplayer iframe').style.width)
+    clearInterval(resizeInterval);
+  }
+  if (event.type == google.ima.AdEvent.Type.STARTED) {
+    var p = 100;
+    resizeInterval = setInterval(function () {
+      document.querySelector('#ima-sample-videoplayer iframe').style.width = (p--) + '%';
+    }, 100)
+  }
 };
 
 Ads.prototype.log = function(message) {
